@@ -28,13 +28,15 @@ public class DatabaseTest {
     public void testConnection() {
 
         try (Connection connection = DriverManager.getConnection(url, username, password)) {
+            System.out.println("Successfully connected to the database.");
+
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT 1");
             assertTrue(resultSet.next());
-            System.out.println("Everything ok with the connection to the database");
+            System.out.println("Successfully executed SELECT 1 statement.");
         } catch (SQLException e) {
-            // e.printStackTrace();
-            System.out.println("Could not connect to the database: " + e.getMessage());
+            System.out.println("Failed to connect to the database: " + e.getMessage());
+            assertTrue(false);
         }
     }
 }
