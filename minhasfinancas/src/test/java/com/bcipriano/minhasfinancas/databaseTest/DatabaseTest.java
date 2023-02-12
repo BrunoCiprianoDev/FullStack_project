@@ -14,7 +14,6 @@ import java.sql.Statement;
 
 @SpringBootTest
 public class DatabaseTest {
-
     @Value("${spring.datasource.url}")
     private String url;
 
@@ -23,7 +22,6 @@ public class DatabaseTest {
 
     @Value("${spring.datasource.password}")
     private String password;
-
     @Test
     public void testConnection() {
 
