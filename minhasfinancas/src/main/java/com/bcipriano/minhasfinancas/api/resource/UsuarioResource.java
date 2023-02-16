@@ -5,19 +5,17 @@ import com.bcipriano.minhasfinancas.exception.ErroAutenticacao;
 import com.bcipriano.minhasfinancas.exception.RegraNegocioException;
 import com.bcipriano.minhasfinancas.model.entity.Usuario;
 import com.bcipriano.minhasfinancas.service.UsuarioService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController //Relaciona controller com responseBy
 @RequestMapping("/api/usuarios")
+@RequiredArgsConstructor
 public class UsuarioResource {
 
-    private UsuarioService service;
-
-    public UsuarioResource(UsuarioService service){
-        this.service = service;
-    }
+    private final UsuarioService service;
 
     @PostMapping //Default = @PostMapping("/")
     public ResponseEntity salvar(@RequestBody UsuarioDTO dto){ //transforma JSON em um objeto

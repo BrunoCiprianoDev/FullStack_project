@@ -16,6 +16,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private UsuarioRepository repository;
 
+    @Override
+    public Optional<Usuario> obterPorId(Long id) {
+        return repository.findById(id);
+    }
+
     @Autowired
     public UsuarioServiceImpl(UsuarioRepository repository){
         this.repository = repository;

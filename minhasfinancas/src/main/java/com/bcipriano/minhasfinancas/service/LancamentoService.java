@@ -4,6 +4,7 @@ import com.bcipriano.minhasfinancas.model.entity.Lancamento;
 import com.bcipriano.minhasfinancas.model.entity.enums.StatusLancamento;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LancamentoService {
 
@@ -18,4 +19,6 @@ public interface LancamentoService {
     void atualizarStatus(Lancamento lancamento, StatusLancamento status);
 
     void validar(Lancamento lancamento);
+
+    Optional<Lancamento> obterPorId(Long id);
 }
