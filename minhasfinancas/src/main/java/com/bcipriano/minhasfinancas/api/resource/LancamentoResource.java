@@ -1,5 +1,6 @@
 package com.bcipriano.minhasfinancas.api.resource;
 
+import com.bcipriano.minhasfinancas.api.dto.AtualizaStatusDTO;
 import com.bcipriano.minhasfinancas.api.dto.LancamentoDTO;
 import com.bcipriano.minhasfinancas.exception.RegraNegocioException;
 import com.bcipriano.minhasfinancas.model.entity.Lancamento;
@@ -30,7 +31,7 @@ public class LancamentoResource {
         try {
             Lancamento entidade = converter(lancamentoDTO);
             Lancamento entidadeSalva = service.salvar(entidade);
-            return new ResponseEntity(entidade, HttpStatus.CREATED);
+            return new ResponseEntity(entidadeSalva, HttpStatus.CREATED);
         } catch (RegraNegocioException regraNegocioException) {
             return ResponseEntity.badRequest().body(regraNegocioException.getMessage());
         }
@@ -47,6 +48,22 @@ public class LancamentoResource {
             } catch (RegraNegocioException regraNegocioException) {
                 return ResponseEntity.badRequest().body(regraNegocioException.getMessage());
             }
+        }).orElseGet(() -> new ResponseEntity("Lancamento não encontrado na base de dados!", HttpStatus.BAD_REQUEST));
+    }
+
+    @PutMapping("{id}/atualiza")
+    public ResponseEntity atualizarStatus(@PathVariable("id") Long id, @RequestBody AtualizaStatusDTO atualizaStatusDTO){
+        return service.obterPorId(id).map(entity->{
+            StatusLancamento statusAtualizado = StatusLancamento.valueOf(atualizaStatusDTO.getStatus());
+            if(statusAtualizado == null) {
+                return ResponseEntity.badRequest().body("Não foi possivel atualizar o status do lançamento");
+            }
+           try{
+               service.atualizarStatus(entity, statusAtualizado);
+               return ResponseEntity.ok(entity);
+           }catch (RegraNegocioException regraNegocioException){
+               return ResponseEntity.badRequest().body(regraNegocioException.getMessage());
+           }
         }).orElseGet(() -> new ResponseEntity("Lancamento não encontrado na base de dados!", HttpStatus.BAD_REQUEST));
     }
 
@@ -94,8 +111,14 @@ public class LancamentoResource {
         Usuario usuario = usuarioService.obterPorId(lancamentoDTO.getUsuario()).orElseThrow(() -> new RegraNegocioException("Usuario não encontrado para o Id informado."));
 
         lancamento.setUsuario(usuario);
-        lancamento.setTipo(TipoLancamento.valueOf(lancamentoDTO.getTipo()));
-        lancamento.setStatus(StatusLancamento.valueOf(lancamentoDTO.getStatus()));
+
+        if(lancamentoDTO.getTipo() != null){
+            lancamento.setTipo(TipoLancamento.valueOf(lancamentoDTO.getTipo()));
+        }
+
+        if(lancamentoDTO.getStatus() != null){
+            lancamento.setStatus(StatusLancamento.valueOf(lancamentoDTO.getStatus()));
+        }
 
         return lancamento;
     }

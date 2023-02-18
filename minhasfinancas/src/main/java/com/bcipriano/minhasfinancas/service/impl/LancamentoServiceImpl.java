@@ -3,6 +3,7 @@ package com.bcipriano.minhasfinancas.service.impl;
 import com.bcipriano.minhasfinancas.exception.RegraNegocioException;
 import com.bcipriano.minhasfinancas.model.entity.Lancamento;
 import com.bcipriano.minhasfinancas.model.entity.enums.StatusLancamento;
+import com.bcipriano.minhasfinancas.model.entity.enums.TipoLancamento;
 import com.bcipriano.minhasfinancas.model.repository.LancamentoRepository;
 import com.bcipriano.minhasfinancas.service.LancamentoService;
 import org.springframework.data.domain.Example;
@@ -90,8 +91,25 @@ public class LancamentoServiceImpl implements LancamentoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public BigDecimal obterSaldoPorUsuario(Long id) {
+        BigDecimal receitas = repository.obterSaldoPorTipoLancamentoEUsuario(id, TipoLancamento.RECEITA);
+        BigDecimal despesas = repository.obterSaldoPorTipoLancamentoEUsuario(id, TipoLancamento.DESPESA);
+
+        if(receitas == null){
+            receitas = BigDecimal.ZERO;
+        }
+        if(despesas == null){
+            despesas = BigDecimal.ZERO;
+        }
+
+        return receitas.subtract(despesas);
+    }
+
+    @Override
     public void atualizarStatus(Lancamento lancamento, StatusLancamento status) {
         lancamento.setStatus(status);
         atualizar(lancamento);
     }
+
 }
